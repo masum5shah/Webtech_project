@@ -7,7 +7,8 @@ if(!isset($_SESSION['farmer_id'])){
     exit;
 }
 
-require "db.php";
+require_once __DIR__ . "/../config/db.php";
+
 $farmer_id = $_SESSION['farmer_id'];
 
 $errors = [];
@@ -62,15 +63,20 @@ if(isset($_POST['add_farm'])){
 <head>
     <title>Add Farm | Agro-Tourism</title>
     <style>
+        /* Body & Background */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #6dd5ed, #2193b0);
+            margin: 0;
+            min-height: 100vh;
+            background: 
+                linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+                url("updates/farm2.jpg") no-repeat center center/cover;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin:0;
         }
+
+        /* Container */
         .container {
             background: rgba(255, 255, 255, 0.95);
             padding: 35px 45px;
@@ -78,12 +84,14 @@ if(isset($_POST['add_farm'])){
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             width: 420px;
         }
+
         h2 {
             text-align:center;
-            color:#2193b0;
+            color:#2e7d32; /* Green like login/register */
             margin-bottom: 25px;
             font-size:26px;
         }
+
         input, textarea {
             width: 100%;
             padding: 12px 15px;
@@ -93,14 +101,16 @@ if(isset($_POST['add_farm'])){
             font-size: 16px;
             outline: none;
         }
+
         input:focus, textarea:focus {
-            border-color: #176b87;
-            box-shadow: 0 0 5px rgba(23,107,135,0.5);
+            border-color: #2e7d32;
+            box-shadow: 0 0 6px rgba(46,125,50,0.4);
         }
+
         button {
             width: 100%;
             padding: 12px;
-            background-color: #2193b0;
+            background-color: #2e7d32; /* Green */
             border: none;
             border-radius: 8px;
             color: white;
@@ -109,9 +119,11 @@ if(isset($_POST['add_farm'])){
             margin-top: 15px;
             transition: 0.3s;
         }
+
         button:hover {
-            background-color: #176b87;
+            background-color: #1b5e20; /* Darker green on hover */
         }
+
         .error {
             background: #ffe0e0;
             padding: 12px;
@@ -120,16 +132,18 @@ if(isset($_POST['add_farm'])){
             color: #a70000;
             border-radius: 6px;
         }
+
         a {
             text-decoration: none;
-            color: #2193b0;
+            color: #2e7d32; /* Green like buttons */
             display:block;
             text-align:center;
             margin-top: 15px;
             font-weight: 500;
         }
+
         a:hover {
-            color: #176b87;
+            color: #1b5e20;
         }
     </style>
 </head>

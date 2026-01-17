@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "db.php";
+require_once __DIR__ . "/../config/db.php";
 
 $errors = [];
 if(isset($_POST['register'])){
@@ -83,27 +83,32 @@ if(isset($_POST['register'])){
         /* Body */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #6dd5ed, #2193b0);
+            margin: 0;
+            min-height: 100vh;
+
+            /* 🌾 Background Image with overlay */
+            background: 
+                linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+                url("updates/farm2.jpg") no-repeat center center/cover;
+
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
         }
 
         /* Container */
         .container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             padding: 40px 50px;
-            border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
             width: 400px;
         }
 
         h2 {
             text-align: center;
             margin-bottom: 30px;
-            color: #333;
+            color: #2e7d32; /* Match login page */
         }
 
         /* Input Fields */
@@ -118,15 +123,15 @@ if(isset($_POST['register'])){
         }
 
         input:focus {
-            border-color: #2193b0;
-            box-shadow: 0 0 5px rgba(33,147,176,0.5);
+            border-color: #2e7d32; /* Match login page */
+            box-shadow: 0 0 6px rgba(46,125,50,0.4);
         }
 
         /* Button */
         button {
             width: 100%;
             padding: 12px;
-            background-color: #2193b0;
+            background-color: #2e7d32; /* Green like login page */
             border: none;
             border-radius: 6px;
             color: white;
@@ -137,12 +142,12 @@ if(isset($_POST['register'])){
         }
 
         button:hover {
-            background-color: #176b87;
+            background-color: #1b5e20; /* Darker green on hover */
         }
 
         /* Links */
         a {
-            color: #2193b0;
+            color: #2e7d32; /* Match login page */
             text-decoration: none;
         }
 
@@ -169,9 +174,9 @@ if(isset($_POST['register'])){
             color: #006400;
         }
 
-        p.back {
+        p {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -202,7 +207,7 @@ if(isset($_POST['register'])){
     </form>
 
     <p>Already have an account? <a href="farmer_login.php">Login here</a></p>
-    <p class="back"><a href="welcomepage.php">⬅ Back to Welcome Page</a></p>
+    <p><a href="welcomepage.php">⬅ Back to Welcome Page</a></p>
 </div>
 </body>
 </html>
