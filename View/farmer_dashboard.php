@@ -8,214 +8,265 @@ if(!isset($_SESSION['farmer_id'])){
 
 require_once __DIR__ . "/../config/db.php";
 
-$farmer_id = $_SESSION['farmer_id'];
+$farmer_id   = $_SESSION['farmer_id'];
 $farmer_name = $_SESSION['farmer_name'];
-
 $success_msg = "";
 
-// Handle Delete Request
+/* Delete Farm */
 if(isset($_POST['delete_farm'])){
     $farm_id = intval($_POST['farm_id']);
 
-    // Verify farm belongs to logged-in farmer
     $stmt = $conn->prepare("SELECT image FROM farms WHERE id=? AND farmer_id=?");
     $stmt->bind_param("ii", $farm_id, $farmer_id);
     $stmt->execute();
-    $result = $stmt->get_result();
+    $res = $stmt->get_result();
 
-    if($result->num_rows > 0){
-        $row = $result->fetch_assoc();
-        // Delete image file
-        if(!empty($row['image']) && file_exists('uploads/'.$row['image'])){
-            unlink('uploads/'.$row['image']);
+    if($res->num_rows > 0){
+        $row = $res->fetch_assoc();
+        $img_path = __DIR__."/uploads/".$row['image'];
+        if(!empty($row['image']) && file_exists($img_path)){
+            unlink($img_path);
         }
-        // Delete farm record
-        $stmt_del = $conn->prepare("DELETE FROM farms WHERE id=?");
-        $stmt_del->bind_param("i", $farm_id);
-        $stmt_del->execute();
-        $stmt_del->close();
+
+        $del = $conn->prepare("DELETE FROM farms WHERE id=? AND farmer_id=?");
+        $del->bind_param("ii", $farm_id, $farmer_id);
+        $del->execute();
 
         $success_msg = "Farm deleted successfully!";
     }
-    $stmt->close();
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Farmer Dashboard | Agro-Tourism</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            min-height: 100vh;
-            background: 
-                linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
-                url("updates/farm2.jpg") no-repeat center center/cover;
-            color: #333;
-        }
+<title>Farmer Dashboard</title>
 
-        .header {
-            background-color: #2e7d32;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 4px solid #1b5e20;
-        }
+<style>
+*{box-sizing:border-box;}
+body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Segoe UI',Tahoma;
+    background:
+        linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),
+        url("updates/farm2.jpg") no-repeat center/cover;
+    display:flex;
+}
 
-        .header h1 { margin:0; font-size:28px; }
+/* Sidebar */
+.sidebar{
+    width:260px;
+    background:#1b5e20;
+    color:white;
+    padding:25px 15px;
+    transition:.35s ease;
+    overflow:hidden;
+}
 
-        .actions {
-            text-align: center;
-            margin: 20px 0;
-        }
+.sidebar.collapsed{
+    width:0;
+    padding:0;
+}
 
-        .actions a {
-            text-decoration: none;
-            color: white;
-            background: #2e7d32;
-            padding: 12px 20px;
-            border-radius: 6px;
-            margin: 0 10px;
-            display: inline-block;
-            transition: 0.3s;
-        }
+.sidebar h2{
+    text-align:center;
+    margin-bottom:25px;
+}
 
-        .actions a:hover { background-color: #1b5e20; }
+.sidebar a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:white;
+    text-decoration:none;
+    padding:12px 15px;
+    margin-bottom:10px;
+    border-radius:8px;
+    font-weight:500;
+    transition:.2s;
+}
 
-        .success {
-            background: #e0ffe0;
-            border-left: 5px solid #28a745;
-            padding: 10px;
-            margin: 10px auto;
-            border-radius: 5px;
-            color: #006400;
-            width: fit-content;
-            text-align: center;
-        }
+.sidebar a:hover{
+    background:#2e7d32;
+}
 
-        .cards-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px;
-        }
+/* Main */
+.main{
+    flex:1;
+    padding:20px 25px;
+    transition:.35s ease;
+}
 
-        .card {
-            background: rgba(255,255,255,0.95);
-            width: 250px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: 0.3s;
-        }
+/* Top bar */
+.topbar{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:20px;
+}
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
+.menu-btn{
+    font-size:22px;
+    cursor:pointer;
+    background:#2e7d32;
+    color:white;
+    padding:8px 14px;
+    border-radius:10px;
+    transition:.25s;
+    box-shadow:0 6px 14px rgba(0,0,0,.25);
+}
 
-        .card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
+.menu-btn:hover{
+    background:#1b5e20;
+    transform:scale(1.05);
+}
 
-        .card-content {
-            padding: 15px;
-        }
+/* Header */
+.header{
+    background:#2e7d32;
+    color:white;
+    padding:18px;
+    border-radius:14px;
+    text-align:center;
+    margin-bottom:20px;
+}
 
-        .card-content h3 { margin:0 0 10px 0; color:#2e7d32; }
+/* Success */
+.success{
+    background:#e0ffe0;
+    padding:12px 18px;
+    margin:15px auto;
+    width:fit-content;
+    border-left:5px solid #28a745;
+    border-radius:8px;
+}
 
-        .card-content p { margin:5px 0; font-size:14px; color:#555; }
+/* Cards */
+.cards{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    justify-content:center;
+}
 
-        .card-content .created { font-size:12px; color:#888; }
+.card{
+    width:280px;
+    background:white;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+}
 
-        .delete-btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            padding: 8px;
-            margin-top: 10px;
-            background-color: #c62828; 
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.3s;
-        }
+.card img{
+    width:100%;
+    height:170px;
+    object-fit:cover;
+}
 
-        .delete-btn:hover { background-color: #8e0000; }
+.card-content{
+    padding:15px;
+}
 
-       .no-farms {
-          text-align: center;
-          color: #e53935;
-          margin-top: 30px;
-          font-size: 18px;
-        }
+.card-content h3{
+    margin:0 0 6px;
+    color:#2e7d32;
+}
 
+.card-content p{
+    font-size:14px;
+    margin:4px 0;
+}
 
-        @media(max-width:600px){
-            .cards-container { flex-direction: column; align-items: center; }
-        }
-    </style>
+.card-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.edit-btn,.delete-btn{
+    flex:1;
+    padding:8px;
+    border-radius:8px;
+    text-align:center;
+    color:white;
+    border:none;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.edit-btn{background:#2e7d32;}
+.delete-btn{background:#c62828;}
+</style>
 </head>
+
 <body>
 
-<div class="header">
-    <h1>Welcome, <?php echo htmlspecialchars($farmer_name); ?>!</h1>
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <h2>🌾 Farmer Panel</h2>
+
+    <a href="add_farm.php">➕ Add Farm</a>
+    <a href="Received_bookings.php">📜 Reveived Book</a>
+    <a href="farmer_chat.php">💬 Chat Box</a>
+    <a href="farmer_profile.php">👤 Profile</a>
+    <a href="farmer_logout.php">🚪 Logout</a>
 </div>
 
-<div class="actions">
-    <a href="add_farm.php">➕ Add Farm / Tourist Place</a>
-    <a href="logout.php">🚪 Logout</a>
-</div>
+<!-- Main -->
+<div class="main">
 
-<!-- Success message -->
-<?php if(!empty($success_msg)) { ?>
-    <div class='success' id="success-msg"><?php echo $success_msg; ?></div>
-<?php } ?>
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+        <h2 style="color:white;margin:0;">Dashboard</h2>
+    </div>
 
-<div class="cards-container">
-<?php
-$sql = "SELECT * FROM farms WHERE farmer_id=? ORDER BY created_at DESC";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $farmer_id);
-$stmt->execute();
-$result = $stmt->get_result();
+    <div class="header">
+        <h1>Welcome, <?= htmlspecialchars($farmer_name) ?></h1>
+    </div>
 
-if($result->num_rows > 0){
-    while($row = $result->fetch_assoc()){
-        echo "<div class='card'>
-                <img src='uploads/".htmlspecialchars($row['image'])."' alt='Farm Image'>
-                <div class='card-content'>
-                    <h3>".htmlspecialchars($row['farm_name'])."</h3>
-                    <p>".htmlspecialchars($row['farm_description'])."</p>
-                    <p><strong>Type:</strong> ".htmlspecialchars($row['farm_type'])."</p>
-                    <p><strong>Address:</strong> ".htmlspecialchars($row['address'])."</p>
-                    <p class='created'>Added: ".$row['created_at']."</p>
-                    <form method='POST' onsubmit='return confirm(\"Are you sure you want to delete this farm?\");'>
-                        <input type='hidden' name='farm_id' value='". $row['id'] ."'>
-                        <button type='submit' name='delete_farm' class='delete-btn'>🗑 Delete</button>
+    <?php if($success_msg): ?>
+        <div class="success"><?= $success_msg ?></div>
+    <?php endif; ?>
+
+    <div class="cards">
+    <?php
+    $stmt = $conn->prepare("SELECT * FROM farms WHERE farmer_id=?");
+    $stmt->bind_param("i", $farmer_id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    while($row = $res->fetch_assoc()):
+        $img = (!empty($row['image']) && file_exists(__DIR__."/uploads/".$row['image']))
+            ? "uploads/".$row['image']
+            : "uploads/default.jpg";
+    ?>
+        <div class="card">
+            <img src="<?= $img ?>">
+            <div class="card-content">
+                <h3><?= htmlspecialchars($row['farm_name']) ?></h3>
+                <p><?= htmlspecialchars($row['farm_description']) ?></p>
+                <p><b>Capacity:</b> <?= $row['capacity'] ?></p>
+                <p><b>Ride:</b> <?= htmlspecialchars($row['available_ride']) ?></p>
+                <p><b>Fee:</b> ৳<?= $row['entry_fee'] ?></p>
+
+                <div class="card-buttons">
+                    <a href="edit_farm.php?farm_id=<?= $row['id'] ?>" class="edit-btn">Edit</a>
+                    <form method="POST" onsubmit="return confirm('Delete this farm?')">
+                        <input type="hidden" name="farm_id" value="<?= $row['id'] ?>">
+                        <button name="delete_farm" class="delete-btn">Delete</button>
                     </form>
                 </div>
-              </div>";
-    }
-} else {
-    echo "<p class='no-farms'>You have not added any farms yet.</p>";
-}
-?>
+            </div>
+        </div>
+    <?php endwhile; ?>
+    </div>
 </div>
 
 <script>
-    // Hide success message after 3 seconds
-    setTimeout(function(){
-        var msg = document.getElementById('success-msg');
-        if(msg) msg.style.display = 'none';
-    }, 3000);
+function toggleSidebar(){
+    document.getElementById('sidebar').classList.toggle('collapsed');
+}
 </script>
 
 </body>

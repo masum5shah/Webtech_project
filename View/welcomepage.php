@@ -208,7 +208,7 @@ nav{
     <div class="login-dropdown">
         <span class="login-btn" id="loginBtn">Login ▾</span>
         <div class="dropdown-menu" id="loginMenu">
-            <a href="touristlogin.php">🧳 Tourist</a>
+            <a href="tourist_login.php">🧳 Tourist</a>
             <a href="farmer_login.php">👨‍🌾 Farmer</a>
             <a href="agentlogin.php">🧑‍💼 Agent</a>
         </div>
