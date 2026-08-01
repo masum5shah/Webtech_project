@@ -2,6 +2,6 @@
 session_start();
 session_unset();
 session_destroy();
-header("Location: farmer_login.php");
+header("Location: welcomepage.php");
 exit;
 ?>

@@ -198,10 +198,10 @@ nav{
     <div class="logo">Agro-Tourism</div>
 
     <div class="nav-links">
-        <a href="#">Destinations</a>
-        <a href="#">Experiences</a>
-        <a href="#">Plan Your Visit</a>
-        <a href="#">Articles</a>
+        <a href="destinations.php">Destinations</a>
+        <a href="experiences.php">Experiences</a>
+        <a href="tourist_login.php">Plan Your Visit</a>
+        <a href="articles.php">Articles</a>
     </div>
 
     <!-- LOGIN -->
@@ -211,6 +211,7 @@ nav{
             <a href="tourist_login.php">🧳 Tourist</a>
             <a href="farmer_login.php">👨‍🌾 Farmer</a>
             <a href="agentlogin.php">🧑‍💼 Agent</a>
+            <a href="admin_login.php">🧑 Admin</a>
         </div>
     </div>
 </nav>
